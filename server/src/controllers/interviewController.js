@@ -1,5 +1,5 @@
 import Groq from "groq-sdk";
-import Interview from "../models/Interview.js";
+import Interview from "../models/interview.js";
 import Resume from "../models/Resume.js";
 import {
   interviewerPrompt,

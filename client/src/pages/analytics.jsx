@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useAuthStore } from '../store/authStore';
 import api from '../api/axios';
 
-export default function Analytics({ isLight }) {
+export default function Analytics() {
+  const { theme } = useAuthStore();
+  const isLight = theme === 'light';
+
   const card   = isLight ? '#ffffff' : '#0d0d1a';
   const border = isLight ? '#e8eaf0' : '#1a1a2e';
   const text   = isLight ? '#0f172a' : '#f1f5f9';
@@ -12,10 +16,7 @@ export default function Analytics({ isLight }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/interview')
-      .then(res => setInterviews(res.data))
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
+    api.get('/interview').then(res => setInterviews(res.data)).catch(err => console.error(err)).finally(() => setLoading(false));
   }, []);
 
   if (loading) return <div style={{ color: muted, fontSize: '13px' }}>Loading analytics...</div>;
@@ -35,10 +36,8 @@ export default function Analytics({ isLight }) {
 
   const completed = interviews.filter(i => i.status === 'completed');
   const totalSessions = interviews.length;
-  const avgScore = completed.length > 0
-    ? Math.round(completed.reduce((a, b) => a + (b.overallScore || 0), 0) / completed.length) : 0;
-  const bestScore = completed.length > 0
-    ? Math.max(...completed.map(i => i.overallScore || 0)) : 0;
+  const avgScore = completed.length > 0 ? Math.round(completed.reduce((a, b) => a + (b.overallScore || 0), 0) / completed.length) : 0;
+  const bestScore = completed.length > 0 ? Math.max(...completed.map(i => i.overallScore || 0)) : 0;
 
   const roundStats = {};
   completed.forEach(i => {
@@ -55,19 +54,17 @@ export default function Analytics({ isLight }) {
   });
 
   const last7 = completed.slice(0, 7).reverse();
-
   const cardStyle = { background: card, border: `1px solid ${border}`, borderRadius: '14px', boxShadow: shadow };
 
   return (
-    <div style={{width:'100%',maxWidth:'1400px'}}>
+    <div style={{ width: '100%', maxWidth: '1400px' }}>
       <div style={{ marginBottom: '28px' }}>
         <div style={{ fontSize: '11px', color: '#6366f1', fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '6px' }}>Analytics</div>
         <h1 style={{ fontSize: '24px', fontWeight: 600, color: text, letterSpacing: '-0.4px', marginBottom: '4px' }}>Your performance</h1>
         <p style={{ fontSize: '13px', color: muted }}>Track your progress across all mock interviews.</p>
       </div>
 
-      {/* Stats row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '14px', marginBottom: '24px' }}>
         {[
           { label: 'Total Sessions', value: totalSessions, sub: `${completed.length} completed` },
           { label: 'Avg Score', value: `${avgScore}%`, sub: 'across all rounds' },
@@ -82,7 +79,6 @@ export default function Analytics({ isLight }) {
         ))}
       </div>
 
-      {/* Score trend */}
       {last7.length > 1 && (
         <div style={{ ...cardStyle, padding: '24px', marginBottom: '20px' }}>
           <div style={{ fontSize: '13px', fontWeight: 500, color: text, marginBottom: '20px' }}>Score Trend</div>
@@ -104,7 +100,6 @@ export default function Analytics({ isLight }) {
       )}
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-        {/* Round performance */}
         <div style={{ ...cardStyle, padding: '20px' }}>
           <div style={{ fontSize: '13px', fontWeight: 500, color: text, marginBottom: '16px' }}>Performance by Round</div>
           {Object.entries(roundStats).map(([round, data]) => {
@@ -125,7 +120,6 @@ export default function Analytics({ isLight }) {
           })}
         </div>
 
-        {/* Company performance */}
         <div style={{ ...cardStyle, padding: '20px' }}>
           <div style={{ fontSize: '13px', fontWeight: 500, color: text, marginBottom: '16px' }}>Performance by Company</div>
           {Object.entries(companyStats).map(([company, data]) => {
@@ -147,7 +141,6 @@ export default function Analytics({ isLight }) {
         </div>
       </div>
 
-      {/* All sessions table */}
       <div style={{ ...cardStyle, overflow: 'hidden' }}>
         <div style={{ padding: '18px 24px', borderBottom: `1px solid ${border}` }}>
           <div style={{ fontSize: '13px', fontWeight: 500, color: text }}>All Sessions</div>
@@ -158,19 +151,15 @@ export default function Analytics({ isLight }) {
           const date = new Date(interview.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
           return (
             <div key={i} style={{ padding: '14px 24px', borderBottom: i < interviews.length - 1 ? `1px solid ${border}` : 'none', display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#6366f115', border: '1px solid #6366f130', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600, color: '#6366f1', flexShrink: 0 }}>
-                {interview.company?.[0] || '?'}
-              </div>
+              <div style={{ width: '34px', height: '34px', borderRadius: '8px', background: '#6366f115', border: '1px solid #6366f130', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600, color: '#6366f1', flexShrink: 0 }}>{interview.company?.[0] || '?'}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: '13px', fontWeight: 500, color: text, marginBottom: '2px' }}>{interview.role} · {interview.company}</div>
                 <div style={{ fontSize: '11px', color: muted }}>{interview.round} Round · {date}</div>
               </div>
               <div style={{ width: '80px' }}>
-                <div style={{ fontSize: '11px', color: muted, marginBottom: '4px', textAlign: 'right' }}>
-                  {interview.status === 'completed' ? `${score}%` : '—'}
-                </div>
+                <div style={{ fontSize: '11px', color: muted, marginBottom: '4px', textAlign: 'right' }}>{interview.status === 'completed' ? `${score}%` : '—'}</div>
                 <div style={{ height: '3px', background: border, borderRadius: '2px' }}>
-                  <div style={{ height: '100%', width: `${score}%`, background: `linear-gradient(90deg, ${scoreColor}, ${scoreColor}99)`, borderRadius: '2px' }} />
+                  <div style={{ height: '100%', width: `${score}%`, background: `linear-gradient(90deg,${scoreColor},${scoreColor}99)`, borderRadius: '2px' }} />
                 </div>
               </div>
               <div style={{ fontSize: '11px', padding: '3px 10px', borderRadius: '20px', flexShrink: 0, background: interview.status === 'completed' ? '#10b98115' : '#6366f115', color: interview.status === 'completed' ? '#10b981' : '#6366f1', border: `1px solid ${interview.status === 'completed' ? '#10b98130' : '#6366f130'}`, fontWeight: 500 }}>

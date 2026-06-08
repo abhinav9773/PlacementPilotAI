@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
+import { useAuthStore } from "../store/authStore";
 import api from "../api/axios";
 
 const ROADMAP_KEY = "pp_roadmap";
 
-export default function Roadmap({ isLight }) {
+export default function Roadmap() {
+  const { theme } = useAuthStore();
+  const isLight = theme === "light";
+
   const card = isLight ? "#ffffff" : "#0d0d1a";
   const border = isLight ? "#e2e8f0" : "#1e1e2e";
   const text = isLight ? "#0f172a" : "#f1f5f9";
@@ -15,7 +19,7 @@ export default function Roadmap({ isLight }) {
   const [roadmap, setRoadmap] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [context, setContext] = useState(null); // interview + resume context shown to user
+  const [context, setContext] = useState(null);
 
   useEffect(() => {
     const stored = localStorage.getItem(ROADMAP_KEY);
@@ -34,15 +38,12 @@ export default function Roadmap({ isLight }) {
     setLoading(true);
     setError(null);
     try {
-      // Fetch interviews + resume in parallel for context display
       const [roadmapRes, interviewsRes, resumeRes] = await Promise.allSettled([
         api.get("/interview/roadmap"),
         api.get("/interview"),
         api.get("/resume"),
       ]);
-
       if (roadmapRes.status === "rejected") throw roadmapRes.reason;
-
       const rd = roadmapRes.value.data;
       const interviews =
         interviewsRes.status === "fulfilled"
@@ -50,8 +51,6 @@ export default function Roadmap({ isLight }) {
           : [];
       const resume =
         resumeRes.status === "fulfilled" ? resumeRes.value.data : null;
-
-      // Build context summary for display
       const ctx = {
         totalInterviews: interviews.length,
         avgScore: interviews.length
@@ -75,7 +74,6 @@ export default function Roadmap({ isLight }) {
           .slice(0, 4),
         skills: resume?.skills || [],
       };
-
       setRoadmap(rd);
       setContext(ctx);
       localStorage.setItem(
@@ -114,7 +112,6 @@ export default function Roadmap({ isLight }) {
     marginBottom: "8px",
   };
 
-  // ── Empty state ──
   if (!roadmap)
     return (
       <div style={{ width: "100%", fontFamily: "'Inter',sans-serif" }}>
@@ -147,7 +144,6 @@ export default function Roadmap({ isLight }) {
             and skill gaps.
           </p>
         </div>
-
         <div
           style={{
             display: "grid",
@@ -245,7 +241,6 @@ export default function Roadmap({ isLight }) {
                 gap: "8px",
                 boxShadow: !loading ? "0 2px 16px #6366f135" : "none",
                 fontFamily: "inherit",
-                transition: "all 0.15s",
               }}
             >
               <i
@@ -255,8 +250,6 @@ export default function Roadmap({ isLight }) {
               {loading ? "Analysing your data…" : "Generate My Roadmap"}
             </button>
           </div>
-
-          {/* What we use */}
           <div
             style={{
               background: card,
@@ -357,10 +350,8 @@ export default function Roadmap({ isLight }) {
       </div>
     );
 
-  // ── Roadmap view ──
   return (
     <div style={{ width: "100%", fontFamily: "'Inter',sans-serif" }}>
-      {/* Header */}
       <div
         style={{
           marginBottom: "20px",
@@ -413,7 +404,6 @@ export default function Roadmap({ isLight }) {
             gap: "6px",
             flexShrink: 0,
             fontFamily: "inherit",
-            transition: "all 0.15s",
           }}
           onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#6366f1")}
           onMouseLeave={(e) => (e.currentTarget.style.borderColor = border)}
@@ -423,7 +413,6 @@ export default function Roadmap({ isLight }) {
         </button>
       </div>
 
-      {/* Context strip — shows what data was used */}
       {context && (
         <div
           style={{
@@ -511,7 +500,6 @@ export default function Roadmap({ isLight }) {
         </div>
       )}
 
-      {/* AI summary */}
       <div
         style={{
           background: isLight
@@ -596,7 +584,6 @@ export default function Roadmap({ isLight }) {
           alignItems: "start",
         }}
       >
-        {/* ── Weekly plan ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {roadmap.weeks?.map((week, i) => {
             const wc = weekColors[i] || weekColors[0];
@@ -610,7 +597,6 @@ export default function Roadmap({ isLight }) {
                   overflow: "hidden",
                 }}
               >
-                {/* Week header */}
                 <div
                   style={{
                     padding: "14px 20px",
@@ -674,7 +660,6 @@ export default function Roadmap({ isLight }) {
                     Week {week.week}
                   </div>
                 </div>
-
                 <div
                   style={{
                     padding: "16px 20px",
@@ -683,7 +668,6 @@ export default function Roadmap({ isLight }) {
                     gap: "16px",
                   }}
                 >
-                  {/* Topics */}
                   <div>
                     <div style={label}>Topics</div>
                     <div
@@ -707,8 +691,6 @@ export default function Roadmap({ isLight }) {
                       ))}
                     </div>
                   </div>
-
-                  {/* Resources */}
                   <div>
                     <div style={label}>Resources</div>
                     <div
@@ -743,8 +725,6 @@ export default function Roadmap({ isLight }) {
                     </div>
                   </div>
                 </div>
-
-                {/* Daily goal */}
                 {week.dailyGoal && (
                   <div
                     style={{
@@ -783,9 +763,7 @@ export default function Roadmap({ isLight }) {
           })}
         </div>
 
-        {/* ── Right sidebar ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          {/* Priority topics */}
           {roadmap.priorityTopics?.length > 0 && (
             <div
               style={{
@@ -855,8 +833,6 @@ export default function Roadmap({ isLight }) {
               </div>
             </div>
           )}
-
-          {/* Weak areas that drove this plan */}
           {context?.weakAreas?.length > 0 && (
             <div
               style={{
@@ -948,8 +924,6 @@ export default function Roadmap({ isLight }) {
               </div>
             </div>
           )}
-
-          {/* Resume skills used */}
           {context?.skills?.length > 0 && (
             <div
               style={{

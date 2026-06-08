@@ -1,9 +1,13 @@
 import { useState, useRef, useEffect } from "react";
+import { useAuthStore } from "../store/authStore";
 import api from "../api/axios";
 
 const RESUME_KEY = "pp_resume";
 
-export default function Resume({ isLight }) {
+export default function Resume() {
+  const { theme } = useAuthStore();
+  const isLight = theme === "light";
+
   const card = isLight ? "#ffffff" : "#0d0d1a";
   const border = isLight ? "#e2e8f0" : "#1e1e2e";
   const text = isLight ? "#0f172a" : "#f1f5f9";
@@ -83,7 +87,6 @@ export default function Resume({ isLight }) {
 
   return (
     <div style={{ width: "100%", fontFamily: "'Inter',sans-serif" }}>
-      {/* Header */}
       <div style={{ marginBottom: "24px" }}>
         <p
           style={{
@@ -97,27 +100,17 @@ export default function Resume({ isLight }) {
         >
           Resume
         </p>
-        <div
+        <h1
           style={{
-            display: "flex",
-            alignItems: "baseline",
-            justifyContent: "space-between",
-            gap: "16px",
-            flexWrap: "wrap",
+            fontSize: "24px",
+            fontWeight: 700,
+            color: text,
+            letterSpacing: "-0.5px",
+            margin: 0,
           }}
         >
-          <h1
-            style={{
-              fontSize: "24px",
-              fontWeight: 700,
-              color: text,
-              letterSpacing: "-0.5px",
-              margin: 0,
-            }}
-          >
-            Your resume
-          </h1>
-        </div>
+          Your resume
+        </h1>
       </div>
 
       <div
@@ -128,9 +121,7 @@ export default function Resume({ isLight }) {
           alignItems: "start",
         }}
       >
-        {/* ── LEFT ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          {/* Upload zone */}
           {view === "upload" && (
             <div
               style={{
@@ -310,7 +301,6 @@ export default function Resume({ isLight }) {
             </div>
           )}
 
-          {/* Result card */}
           {view === "result" && result && (
             <div
               style={{
@@ -320,7 +310,6 @@ export default function Resume({ isLight }) {
                 overflow: "hidden",
               }}
             >
-              {/* Top bar */}
               <div
                 style={{
                   padding: "14px 20px",
@@ -385,8 +374,6 @@ export default function Resume({ isLight }) {
                   Replace
                 </button>
               </div>
-
-              {/* Stats row */}
               <div
                 style={{
                   display: "grid",
@@ -438,8 +425,6 @@ export default function Resume({ isLight }) {
                   </div>
                 ))}
               </div>
-
-              {/* AI context notice */}
               <div
                 style={{
                   margin: "16px 20px 0",
@@ -486,24 +471,13 @@ export default function Resume({ isLight }) {
                   </div>
                 </div>
               </div>
-
-              {/* Skills */}
               <div style={{ padding: "16px 20px" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <label style={label}>
-                    Detected skills{" "}
-                    <span style={{ color: subtle, fontWeight: 400 }}>
-                      ({result.skills?.length || 0} matched from keyword list)
-                    </span>
-                  </label>
-                </div>
+                <label style={label}>
+                  Detected skills{" "}
+                  <span style={{ color: subtle, fontWeight: 400 }}>
+                    ({result.skills?.length || 0} matched)
+                  </span>
+                </label>
                 <div
                   style={{
                     display: "flex",
@@ -537,8 +511,6 @@ export default function Resume({ isLight }) {
                     </span>
                   )}
                 </div>
-
-                {/* Raw text preview toggle */}
                 {result.rawText && (
                   <div>
                     <button
@@ -590,9 +562,7 @@ export default function Resume({ isLight }) {
           )}
         </div>
 
-        {/* ── RIGHT ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-          {/* How it works */}
           <div
             style={{
               background: card,
@@ -690,7 +660,6 @@ export default function Resume({ isLight }) {
             ))}
           </div>
 
-          {/* Tips */}
           <div
             style={{
               background: card,

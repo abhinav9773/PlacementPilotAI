@@ -1,11 +1,15 @@
 import { useState } from "react";
+import { useAuthStore } from "../store/authStore";
 import TextInterview from "./TextInterview";
 import VideoInterview from "./VideoInterview";
 
 const MODE_KEY = "pp_interview_mode";
 const SESSION_KEY = "pp_video_interview";
 
-export default function Interview({ isLight }) {
+export default function Interview() {
+  const { theme } = useAuthStore();
+  const isLight = theme === "light";
+
   const text = isLight ? "#0f172a" : "#f1f5f9";
   const muted = isLight ? "#64748b" : "#64748b";
   const border = isLight ? "#e2e8f0" : "#1e1e2e";
@@ -42,7 +46,6 @@ export default function Interview({ isLight }) {
     <div
       style={{ width: "100%", fontFamily: "'Inter',-apple-system,sans-serif" }}
     >
-      {/* ── Header ── */}
       <div style={{ marginBottom: "24px" }}>
         <p
           style={{
@@ -56,31 +59,20 @@ export default function Interview({ isLight }) {
         >
           Mock Interview
         </p>
-        <div
+        <h1
           style={{
-            display: "flex",
-            alignItems: "baseline",
-            justifyContent: "space-between",
-            gap: "16px",
-            flexWrap: "wrap",
+            fontSize: "24px",
+            fontWeight: 700,
+            color: text,
+            letterSpacing: "-0.5px",
+            margin: 0,
+            lineHeight: 1.2,
           }}
         >
-          <h1
-            style={{
-              fontSize: "24px",
-              fontWeight: 700,
-              color: text,
-              letterSpacing: "-0.5px",
-              margin: 0,
-              lineHeight: 1.2,
-            }}
-          >
-            Practice like it's real
-          </h1>
-        </div>
+          Practice like it's real
+        </h1>
       </div>
 
-      {/* ── Mode switcher ── */}
       <div
         style={{
           display: "inline-flex",
@@ -102,7 +94,7 @@ export default function Interview({ isLight }) {
           {
             id: "video",
             icon: "ti-microphone",
-            label: "video",
+            label: "Video",
             sub: "Speak answers",
           },
         ].map((m) => {

@@ -1,11 +1,6 @@
-import { useState, useEffect } from "react";
 import { useAuthStore } from "../store/authStore";
-import { useNavigate } from "react-router-dom";
-import Resume from "./Resume";
-import Interview from "./interview";
-import Analytics from "./analytics";
-import Roadmap from "./Roadmap";
-import Settings from "./Settings";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import api from "../api/axios";
 
 const getGreeting = () => {
@@ -16,12 +11,27 @@ const getGreeting = () => {
 };
 
 const navItems = [
-  { icon: "ti-layout-dashboard", label: "Dashboard", id: "dashboard" },
-  { icon: "ti-microphone", label: "Interview", id: "interview" },
-  { icon: "ti-file-cv", label: "Resume", id: "resume" },
-  { icon: "ti-chart-bar", label: "Analytics", id: "analytics" },
-  { icon: "ti-map", label: "Roadmap", id: "roadmap" },
-  { icon: "ti-settings", label: "Settings", id: "settings" },
+  {
+    icon: "ti-layout-dashboard",
+    label: "Dashboard",
+    id: "dashboard",
+    path: "/dashboard",
+  },
+  {
+    icon: "ti-microphone",
+    label: "Interview",
+    id: "interview",
+    path: "/interview",
+  },
+  { icon: "ti-file-cv", label: "Resume", id: "resume", path: "/resume" },
+  {
+    icon: "ti-chart-bar",
+    label: "Analytics",
+    id: "analytics",
+    path: "/analytics",
+  },
+  { icon: "ti-map", label: "Roadmap", id: "roadmap", path: "/roadmap" },
+  { icon: "ti-settings", label: "Settings", id: "settings", path: "/settings" },
 ];
 
 function timeAgo(date) {
@@ -41,16 +51,12 @@ function getTokens(isLight) {
     card: isLight ? "#ffffff" : "#0d0d1a",
     border: isLight ? "#e8eaf0" : "#1a1a2e",
     text: isLight ? "#0f172a" : "#f1f5f9",
-    textSub: isLight ? "#334155" : "#cbd5e1",
     muted: isLight ? "#64748b" : "#475569",
-    dim: isLight ? "#94a3b8" : "#334155",
-    inputBg: isLight ? "#f8fafc" : "#080810",
     navHover: isLight ? "#f1f5f9" : "#ffffff08",
     navActive: isLight ? "#eef2ff" : "#6366f115",
   };
 }
 
-// Sign out confirmation modal
 function SignOutModal({ isLight, onConfirm, onCancel }) {
   const t = getTokens(isLight);
   return (
@@ -155,8 +161,10 @@ function SignOutModal({ isLight, onConfirm, onCancel }) {
   );
 }
 
-function DashboardHome({ user, setActive, isLight }) {
+function DashboardHome({ isLight }) {
   const t = getTokens(isLight);
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -214,8 +222,6 @@ function DashboardHome({ user, setActive, isLight }) {
     { label: "Best Round", value: bestRound, delta: "highest avg score" },
   ];
 
-  const recentSessions = interviews.slice(0, 5);
-
   return (
     <>
       <div style={{ marginBottom: "32px" }}>
@@ -252,8 +258,8 @@ function DashboardHome({ user, setActive, isLight }) {
       <div
         style={{
           background: isLight
-            ? "linear-gradient(135deg, #eef2ff 0%, #f5f0ff 50%, #eef2ff 100%)"
-            : "linear-gradient(135deg, #0f0f2a 0%, #1a0a2e 50%, #0a0f2a 100%)",
+            ? "linear-gradient(135deg,#eef2ff 0%,#f5f0ff 50%,#eef2ff 100%)"
+            : "linear-gradient(135deg,#0f0f2a 0%,#1a0a2e 50%,#0a0f2a 100%)",
           border: isLight ? "1px solid #c7d2fe" : "1px solid #6366f130",
           borderRadius: "16px",
           padding: "32px 36px",
@@ -360,7 +366,7 @@ function DashboardHome({ user, setActive, isLight }) {
                 style={{
                   width: "3px",
                   height: `${h}px`,
-                  background: "linear-gradient(to top, #6366f1, #8b5cf6)",
+                  background: "linear-gradient(to top,#6366f1,#8b5cf6)",
                   borderRadius: "2px",
                   opacity: 0.7 + (i % 3) * 0.1,
                 }}
@@ -368,10 +374,10 @@ function DashboardHome({ user, setActive, isLight }) {
             ))}
           </div>
           <button
-            onClick={() => setActive("interview")}
+            onClick={() => navigate("/interview")}
             style={{
               padding: "12px 28px",
-              background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+              background: "linear-gradient(135deg,#6366f1,#8b5cf6)",
               border: "none",
               borderRadius: "10px",
               color: "#fff",
@@ -393,7 +399,7 @@ function DashboardHome({ user, setActive, isLight }) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
+          gridTemplateColumns: "repeat(4,1fr)",
           gap: "14px",
           marginBottom: "28px",
         }}
@@ -457,7 +463,7 @@ function DashboardHome({ user, setActive, isLight }) {
             Recent Sessions
           </div>
           <div
-            onClick={() => setActive("analytics")}
+            onClick={() => navigate("/analytics")}
             style={{
               fontSize: "12px",
               color: "#6366f1",
@@ -472,7 +478,7 @@ function DashboardHome({ user, setActive, isLight }) {
           <div style={{ padding: "24px", fontSize: "13px", color: t.muted }}>
             Loading...
           </div>
-        ) : recentSessions.length === 0 ? (
+        ) : interviews.length === 0 ? (
           <div
             style={{
               padding: "32px",
@@ -484,7 +490,7 @@ function DashboardHome({ user, setActive, isLight }) {
             No sessions yet. Start your first interview!
           </div>
         ) : (
-          recentSessions.map((s, i) => {
+          interviews.slice(0, 5).map((s, i) => {
             const score = s.overallScore || 0;
             const isPassed = score >= 60;
             return (
@@ -492,10 +498,7 @@ function DashboardHome({ user, setActive, isLight }) {
                 key={i}
                 style={{
                   padding: "16px 24px",
-                  borderBottom:
-                    i < recentSessions.length - 1
-                      ? `1px solid ${t.border}`
-                      : "none",
+                  borderBottom: i < 4 ? `1px solid ${t.border}` : "none",
                   display: "flex",
                   alignItems: "center",
                   gap: "16px",
@@ -603,27 +606,27 @@ function DashboardHome({ user, setActive, isLight }) {
   );
 }
 
-export default function Dashboard() {
+// ─── SHELL (sidebar + layout) ─────────────────────────────────────────────────
+export default function Dashboard({ children }) {
   const { user, logout, theme, setTheme } = useAuthStore();
   const navigate = useNavigate();
-  const [active, setActiveState] = useState(
-    localStorage.getItem("pp_tab") || "dashboard",
-  );
+  const location = useLocation();
   const [hoveredNav, setHoveredNav] = useState(null);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   const isLight = theme === "light";
   const t = getTokens(isLight);
 
-  const setActive = (tab) => {
-    localStorage.setItem("pp_tab", tab);
-    setActiveState(tab);
-  };
+  const currentPage =
+    navItems.find((n) => n.path === location.pathname)?.id || "dashboard";
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
+
+  // If children is just a <div /> we're on /dashboard, show DashboardHome
+  const isDashboardHome = location.pathname === "/dashboard";
 
   return (
     <div
@@ -631,10 +634,9 @@ export default function Dashboard() {
         display: "flex",
         height: "100vh",
         background: t.bg,
-        fontFamily: "'Inter', -apple-system, sans-serif",
+        fontFamily: "'Inter',-apple-system,sans-serif",
         color: t.text,
         overflow: "hidden",
-        transition: "background 0.2s ease",
       }}
     >
       {showSignOutModal && (
@@ -658,7 +660,6 @@ export default function Dashboard() {
           boxShadow: isLight ? "1px 0 0 #e8eaf0" : "none",
         }}
       >
-        {/* Logo */}
         <div
           style={{
             padding: "24px 20px 20px",
@@ -672,7 +673,7 @@ export default function Dashboard() {
             style={{
               width: "32px",
               height: "32px",
-              background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+              background: "linear-gradient(135deg,#6366f1,#8b5cf6)",
               borderRadius: "8px",
               display: "flex",
               alignItems: "center",
@@ -702,14 +703,13 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Nav */}
         <nav style={{ padding: "12px 10px", flex: 1 }}>
           {navItems.map((item) => {
-            const isActive = active === item.id;
+            const isActive = currentPage === item.id;
             return (
               <div
                 key={item.id}
-                onClick={() => setActive(item.id)}
+                onClick={() => navigate(item.path)}
                 onMouseEnter={() => setHoveredNav(item.id)}
                 onMouseLeave={() => setHoveredNav(null)}
                 style={{
@@ -753,7 +753,6 @@ export default function Dashboard() {
           })}
         </nav>
 
-        {/* Theme toggle */}
         <div
           style={{ padding: "10px 12px", borderTop: `1px solid ${t.border}` }}
         >
@@ -781,7 +780,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* User profile section */}
         <div style={{ padding: "16px", borderTop: `1px solid ${t.border}` }}>
           <div
             style={{
@@ -848,7 +846,6 @@ export default function Dashboard() {
               alignItems: "center",
               justifyContent: "center",
               gap: "6px",
-              transition: "all 0.15s",
             }}
             onMouseEnter={(e) =>
               (e.currentTarget.style.background = "#ef444420")
@@ -859,22 +856,14 @@ export default function Dashboard() {
                 : "#ef444412")
             }
           >
-            <i className="ti ti-logout" style={{ fontSize: "13px" }} />
-            Sign out
+            <i className="ti ti-logout" style={{ fontSize: "13px" }} /> Sign out
           </button>
         </div>
       </aside>
 
       {/* MAIN */}
       <main style={{ flex: 1, overflowY: "auto", padding: "32px 36px" }}>
-        {active === "dashboard" && (
-          <DashboardHome user={user} setActive={setActive} isLight={isLight} />
-        )}
-        {active === "resume" && <Resume isLight={isLight} />}
-        {active === "interview" && <Interview isLight={isLight} />}
-        {active === "analytics" && <Analytics isLight={isLight} />}
-        {active === "roadmap" && <Roadmap isLight={isLight} />}
-        {active === "settings" && <Settings isLight={isLight} />}
+        {isDashboardHome ? <DashboardHome isLight={isLight} /> : children}
       </main>
     </div>
   );

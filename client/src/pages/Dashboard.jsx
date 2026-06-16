@@ -669,21 +669,16 @@ export default function Dashboard({ children }) {
             gap: "10px",
           }}
         >
-          <div
+          <img
+            src="/logo1.png"
+            alt="PlacementPilot"
             style={{
-              width: "32px",
-              height: "32px",
-              background: "linear-gradient(135deg,#6366f1,#8b5cf6)",
+              width: "60px",
+              height: "60px",
               borderRadius: "8px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "16px",
-              boxShadow: "0 0 12px #6366f140",
+              objectFit: "contain",
             }}
-          >
-            ✦
-          </div>
+          />
           <div>
             <div
               style={{

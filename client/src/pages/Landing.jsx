@@ -268,21 +268,16 @@ export default function Landing() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div
+          <img
+            src="/logo1.png"
+            alt="PlacementPilot"
             style={{
-              width: "32px",
-              height: "32px",
-              background: "linear-gradient(135deg,#6366f1,#8b5cf6)",
-              borderRadius: "9px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "15px",
-              boxShadow: "0 0 16px #6366f160",
+              width: "68px",
+              height: "68px",
+              borderRadius: "8px",
+              objectFit: "contain",
             }}
-          >
-            ✦
-          </div>
+          />
           <span
             style={{
               fontSize: "15px",
@@ -1707,21 +1702,16 @@ export default function Landing() {
                   marginBottom: "16px",
                 }}
               >
-                <div
+                <img
+                  src="/logo1.png"
+                  alt="PlacementPilot"
                   style={{
-                    width: "32px",
-                    height: "32px",
-                    background: "linear-gradient(135deg,#6366f1,#8b5cf6)",
-                    borderRadius: "9px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "15px",
-                    boxShadow: "0 0 12px #6366f140",
+                    width: "74px",
+                    height: "74px ",
+                    borderRadius: "8px",
+                    objectFit: "contain",
                   }}
-                >
-                  ✦
-                </div>
+                />
                 <span
                   style={{
                     fontWeight: 700,

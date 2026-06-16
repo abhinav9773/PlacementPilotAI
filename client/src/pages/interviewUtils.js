@@ -5,6 +5,12 @@ export const COMPANIES = [
   "Microsoft",
   "Meta",
   "Apple",
+  "Goldman Sachs",
+  "Atlassian",
+  "Stripe",
+  "Adobe",
+  "Netflix",
+  "Uber",
   "Flipkart",
   "Razorpay",
   "Swiggy",
@@ -12,7 +18,6 @@ export const COMPANIES = [
   "Infosys",
   "TCS",
   "Wipro",
-  "Other",
 ];
 export const ROUNDS = ["DSA", "Technical", "HR", "System Design"];
 export const PHASE = {

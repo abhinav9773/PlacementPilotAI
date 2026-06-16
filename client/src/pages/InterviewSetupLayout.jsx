@@ -6,6 +6,12 @@ const COMPANIES = [
   "Microsoft",
   "Meta",
   "Apple",
+  "Goldman Sachs",
+  "Atlassian",
+  "Stripe",
+  "Adobe",
+  "Netflix",
+  "Uber",
   "Flipkart",
   "Razorpay",
   "Swiggy",
@@ -13,7 +19,6 @@ const COMPANIES = [
   "Infosys",
   "TCS",
   "Wipro",
-  "Other",
 ];
 const ROUNDS = [
   { id: "DSA", icon: "ti-binary-tree", color: "#6366f1", light: "#eef2ff" },

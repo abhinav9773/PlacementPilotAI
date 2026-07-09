@@ -1,5 +1,5 @@
 import Groq from "groq-sdk";
-import Interview from "../models/interview.js";
+import Interview from "../models/Interview.js";
 import Resume from "../models/Resume.js";
 import {
   interviewerPrompt,
@@ -8,6 +8,17 @@ import {
 
 console.log("GROQ KEY LOADED:", process.env.GROQ_API_KEY?.slice(0, 10));
 const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+// Parse interviewer response — prompt now returns plain text questions
+// INTERVIEW_COMPLETE signals end of interview
+const parseInterviewerResponse = (raw) => {
+  const cleaned = raw.replace(/```/g, "").trim();
+  const isComplete = cleaned.includes("INTERVIEW_COMPLETE");
+  return {
+    complete: isComplete,
+    question: isComplete ? "" : cleaned,
+  };
+};
 
 const getResumeContext = async (userId) => {
   try {
@@ -54,9 +65,12 @@ export const startInterview = async (req, res) => {
       max_tokens: 1024,
       messages: [{ role: "user", content: prompt }],
     });
+    const { question: firstQuestion } = parseInterviewerResponse(
+      message.choices[0].message.content,
+    );
     res.json({
       interviewId: interview._id,
-      question: message.choices[0].message.content,
+      question: firstQuestion,
       questionNumber: 1,
       mode: interview.mode,
     });
@@ -88,8 +102,12 @@ export const resumeInterview = async (req, res) => {
       max_tokens: 1024,
       messages: [{ role: "user", content: nextPrompt }],
     });
+    // Parse structured JSON response
+    const { question } = parseInterviewerResponse(
+      message.choices[0].message.content,
+    );
     res.json({
-      question: message.choices[0].message.content,
+      question,
       questionNumber: interview.history.length + 1,
       mode: interview.mode || "text",
       role: interview.role,
@@ -117,6 +135,8 @@ export const submitAnswer = async (req, res) => {
       return res.status(400).json({ message: "Interview already completed" });
     }
     const { skills, resumeContext } = await getResumeContext(req.user.userId);
+
+    // Evaluate the answer
     const evalPrompt = evaluatorPrompt({
       question,
       answer,
@@ -159,6 +179,7 @@ export const submitAnswer = async (req, res) => {
     });
     await interview.save();
 
+    // Get next question
     const nextPrompt = interviewerPrompt({
       role: interview.role,
       company: interview.company,
@@ -175,8 +196,11 @@ export const submitAnswer = async (req, res) => {
       max_tokens: 1024,
       messages: [{ role: "user", content: nextPrompt }],
     });
-    const nextQuestion = nextMessage.choices[0].message.content;
-    const isComplete = nextQuestion.includes("INTERVIEW_COMPLETE");
+
+    // Parse structured JSON response
+    const { complete: llmComplete, question: nextQuestion } =
+      parseInterviewerResponse(nextMessage.choices[0].message.content);
+    const isComplete = llmComplete || interview.history.length >= 7;
 
     if (isComplete) {
       const scores = interview.history.map((h) => h.score || 5);
@@ -185,6 +209,7 @@ export const submitAnswer = async (req, res) => {
       );
       interview.status = "completed";
       interview.overallScore = overallScore;
+      interview.abandonedAt = undefined;
       await interview.save();
       return res.json({
         complete: true,
@@ -357,7 +382,6 @@ export const generateRoadmap = async (req, res) => {
     ];
 
     const prompt = promptParts.join("\n");
-
     const message = await client.chat.completions.create({
       model: "llama-3.3-70b-versatile",
       max_tokens: 2048,

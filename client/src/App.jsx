@@ -8,6 +8,7 @@ import Analytics from "./pages/analytics";
 import Roadmap from "./pages/Roadmap";
 import Settings from "./pages/Settings";
 import { useAuthStore } from "./store/authStore";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 function ProtectedRoute({ children }) {
   const token = useAuthStore((s) => s.token);
@@ -40,7 +41,9 @@ export default function App() {
           path="/interview"
           element={
             <AppLayout>
-              <Interview />
+              <ErrorBoundary>
+                <Interview />
+              </ErrorBoundary>
             </AppLayout>
           }
         />
@@ -48,7 +51,9 @@ export default function App() {
           path="/resume"
           element={
             <AppLayout>
-              <Resume />
+              <ErrorBoundary>
+                <Resume />
+              </ErrorBoundary>
             </AppLayout>
           }
         />
@@ -56,7 +61,9 @@ export default function App() {
           path="/analytics"
           element={
             <AppLayout>
-              <Analytics />
+              <ErrorBoundary>
+                <Analytics />
+              </ErrorBoundary>
             </AppLayout>
           }
         />
@@ -64,7 +71,9 @@ export default function App() {
           path="/roadmap"
           element={
             <AppLayout>
-              <Roadmap />
+              <ErrorBoundary>
+                <Roadmap />
+              </ErrorBoundary>
             </AppLayout>
           }
         />
@@ -72,7 +81,9 @@ export default function App() {
           path="/settings"
           element={
             <AppLayout>
-              <Settings />
+              <ErrorBoundary>
+                <Settings />
+              </ErrorBoundary>
             </AppLayout>
           }
         />

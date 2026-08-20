@@ -462,7 +462,7 @@ export default function Landing() {
                 letterSpacing: "0.2px",
               }}
             >
-              Powered by Llama 3.3 70B · Free to use
+              Powered by GPT-OSS 120B · Free to use
             </span>
           </div>
 

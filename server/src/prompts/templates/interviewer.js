@@ -20,7 +20,7 @@ INTERVIEWING RULES:
 7. For HR: use STAR format. Reference their actual projects from the resume.
 8. For Technical: ask about real implementation details, edge cases, and trade-offs.
 9. Never repeat a question you already asked.
-10. After exactly 7 meaningful exchanges, end with: INTERVIEW_COMPLETE
+10. After exactly 8 meaningful exchanges, end with: INTERVIEW_COMPLETE
 
 ${
   history.length === 0

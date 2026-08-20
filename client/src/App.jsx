@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Landing from "./pages/Landing";
-import AuthCallback from "./pages/AuthCallback";
 import Dashboard from "./pages/Dashboard";
 import Interview from "./pages/interview";
 import Resume from "./pages/Resume";
 import Analytics from "./pages/analytics";
 import Roadmap from "./pages/Roadmap";
 import Settings from "./pages/Settings";
+import AuthCallback from "./pages/AuthCallback";
 import { useAuthStore } from "./store/authStore";
 import ErrorBoundary from "./components/ErrorBoundary";
 

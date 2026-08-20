@@ -61,7 +61,7 @@ export const startInterview = async (req, res) => {
       history: [],
     });
     const message = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 1024,
       messages: [{ role: "user", content: prompt }],
     });
@@ -98,7 +98,7 @@ export const resumeInterview = async (req, res) => {
       })),
     });
     const message = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 1024,
       messages: [{ role: "user", content: nextPrompt }],
     });
@@ -146,7 +146,7 @@ export const submitAnswer = async (req, res) => {
       resumeContext,
     });
     const evalMessage = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 512,
       messages: [{ role: "user", content: evalPrompt }],
     });
@@ -192,7 +192,7 @@ export const submitAnswer = async (req, res) => {
       })),
     });
     const nextMessage = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 1024,
       messages: [{ role: "user", content: nextPrompt }],
     });
@@ -200,7 +200,7 @@ export const submitAnswer = async (req, res) => {
     // Parse structured JSON response
     const { complete: llmComplete, question: nextQuestion } =
       parseInterviewerResponse(nextMessage.choices[0].message.content);
-    const isComplete = llmComplete || interview.history.length >= 7;
+    const isComplete = llmComplete || interview.history.length >= 8;
 
     if (isComplete) {
       const scores = interview.history.map((h) => h.score || 5);
@@ -383,7 +383,7 @@ export const generateRoadmap = async (req, res) => {
 
     const prompt = promptParts.join("\n");
     const message = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 2048,
       messages: [{ role: "user", content: prompt }],
     });

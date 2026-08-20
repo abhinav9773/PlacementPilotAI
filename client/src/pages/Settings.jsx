@@ -489,7 +489,7 @@ export default function Settings() {
             </div>
             {[
               { label: "Version", value: "1.0.0 Beta" },
-              { label: "AI Model", value: "Llama 3.3 70B via Groq" },
+              { label: "AI Model", value: "GPT-OSS 120B via Groq" },
               { label: "Built with", value: "React + Node.js + MongoDB" },
             ].map((item, i) => (
               <div

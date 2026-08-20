@@ -1,5 +1,3 @@
-// server/src/middleware/sanitize.js
-
 const MAX_LENGTHS = {
   role: 100,
   company: 100,
@@ -57,7 +55,7 @@ export const sanitizeInterview = (req, res, next) => {
 // Middleware: validate answer is long enough to be meaningful
 export const validateAnswer = (req, res, next) => {
   const { answer } = req.body;
-  if (!answer || answer.trim().length < 2) {
+  if (!answer || answer.trim().length < 10) {
     return res.status(400).json({
       message:
         "Answer is too short. Please provide a meaningful response (at least 10 characters).",
